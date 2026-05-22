@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "choicex-8590"
+  },
+  "targets": {
+    "choicex-8590": {
+      "hosting": {
+        "admin": [
+          "choice8590-admi"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
