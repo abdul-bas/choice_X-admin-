@@ -25,9 +25,8 @@ class BrandProvider extends ChangeNotifier {
 
   bool get searchOpen => _searchOpen;
   List<BrandModel> get filtered => _filteredBrands;
-   List<BrandModel> get brands => _allBrands;
+  List<BrandModel> get brands => _allBrands;
 
- 
   void setBrands({
     required AsyncSnapshot<QuerySnapshot<Object?>> snapshot,
   }) {
@@ -45,7 +44,6 @@ class BrandProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  
   void toggleSearch() {
     _searchOpen = !_searchOpen;
 
@@ -75,7 +73,6 @@ class BrandProvider extends ChangeNotifier {
     notifyListeners();
   }
 
- 
   Future<bool> createBrand() async {
     final form = formKey.currentState;
 
@@ -108,7 +105,6 @@ class BrandProvider extends ChangeNotifier {
     }
   }
 
-  
   Future<bool> updateBrand(String id, int index) async {
     final form = formKey.currentState;
 
@@ -146,13 +142,12 @@ class BrandProvider extends ChangeNotifier {
     }
   }
 
-  
   void populate(BrandModel brand) {
     nameController.text = brand.name;
     image = brand.image;
+    notifyListeners();
   }
 
-  
   Future<void> fileUpload() async {
     final result = await FilePicker.platform.pickFiles(withData: true);
 
@@ -178,14 +173,8 @@ class BrandProvider extends ChangeNotifier {
     searchFocus.dispose();
     super.dispose();
   }
-  
 
-
-
-  Uint8List? get imageBytes =>
-      image != null ? base64Decode(image!) : null;
-
-
+  Uint8List? get imageBytes => image != null ? base64Decode(image!) : null;
 
   void reset() {
     nameController.clear();
@@ -193,13 +182,6 @@ class BrandProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-  
-
-  
-
-
-  
   bool validateForm() => formKey.currentState?.validate() ?? false;
 
   void setLoading(bool value) {

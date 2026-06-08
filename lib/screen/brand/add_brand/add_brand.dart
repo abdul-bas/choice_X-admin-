@@ -4,35 +4,34 @@ import 'package:choice_x_admin/screen/brand/common/brand_dialog_shell/brand_dial
 import 'package:choice_x_admin/screen/brand/common/header/header.dart';
 import 'package:choice_x_admin/screen/brand/common/image_picker/image_picker.dart';
 import 'package:choice_x_admin/screen/brand/common/name_field/name_field.dart';
+import 'package:choice_x_admin/screen/brand/controller/brand_contoller.dart';
 import 'package:choice_x_admin/screen/common/app_widgets/app_loading.dart';
 import 'package:choice_x_admin/state/provider/brand_provider.dart';
-import 'package:choice_x_admin/core/utils/snackbar/error_snackbar.dart';
-import 'package:choice_x_admin/core/utils/snackbar/success_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class AddBrandScreen extends StatelessWidget {
+class AddBrandScreen extends StatefulWidget {
   const AddBrandScreen({super.key});
 
-  Future<void> _submit(BuildContext context) async {
-    final provider = context.read<BrandProvider>();
+  @override
+  State<AddBrandScreen> createState() => _AddBrandScreenState();
+}
 
-    if (provider.image == null) {
-      showError(context, 'Please select a logo image');
-      return;
-    }
-
-    final success = await provider.createBrand();
-    if (!context.mounted) return;
-
-    if (success) {
-      Navigator.pop(context);
-      showSuccess(context, 'Brand created successfully');
-    } else {
-      showError(context, 'Failed to create brand');
-    }
+class _AddBrandScreenState extends State<AddBrandScreen> {
+  @override
+  void initState() {
+     WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BrandProvider>().reset();
+    });
+    super.initState();
   }
-
+  @override
+  void dispose() {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BrandProvider>().reset();
+    });
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Consumer<BrandProvider>(
@@ -59,7 +58,7 @@ class AddBrandScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   BrandNameField(controller: provider.nameController),
                   const SizedBox(height: 24),
-                  BrandActions(onSubmit: () => _submit(context)),
+                  BrandActions(onSubmit: () => BrandContoller.createBrand(context)),
                 ],
               ),
             ),

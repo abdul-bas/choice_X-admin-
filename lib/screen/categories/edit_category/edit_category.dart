@@ -8,8 +8,6 @@ import 'package:choice_x_admin/screen/categories/common/category_shell.dart';
 import 'package:choice_x_admin/screen/categories/controller/category_controller.dart';
 import 'package:choice_x_admin/screen/common/app_widgets/app_loading.dart';
 import 'package:choice_x_admin/state/provider/category_provider.dart';
-import 'package:choice_x_admin/core/utils/snackbar/error_snackbar.dart';
-import 'package:choice_x_admin/core/utils/snackbar/success_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,25 +34,6 @@ class _UpdateCategoryState extends State<UpdateCategory> {
     });
   }
 
-  Future<void> _submit(BuildContext context) async {
-    final provider = context.read<CategoryProvider>();
-
-    if (provider.image == null) {
-      showError(context, 'Please select a category image');
-      return;
-    }
-
-    final success =
-        await provider.updateCategory(widget.category.id, widget.index);
-    if (!context.mounted) return;
-
-    if (success) {
-      Navigator.pop(context);
-      showSuccess(context, 'Category updated successfully');
-    } else {
-      showError(context, 'Failed to update category');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +69,7 @@ class _UpdateCategoryState extends State<UpdateCategory> {
                   ),
                   const SizedBox(height: 24),
                   BrandActions(
-                    onSubmit: () => _submit(context),
+                    onSubmit: () =>CategoryController.updateCategory(context,widget.category.id,widget.index),
                     actionTitle: 'Update category',
                     actionIcon: Icons.update,
                   ),

@@ -1,7 +1,7 @@
-
 import 'package:choice_x_admin/screen/common/section_label/section_label.dart';
 import 'package:choice_x_admin/screen/dashboard/controller/chart_helper.dart';
 import 'package:choice_x_admin/screen/dashboard/controller/percents.dart';
+import 'package:choice_x_admin/screen/dashboard/widgets/empty_state/empty_state.dart';
 import 'package:choice_x_admin/screen/dashboard/widgets/order_status_card/filter_bar.dart';
 import 'package:choice_x_admin/screen/dashboard/widgets/order_status_card/order_status_card.dart';
 import 'package:choice_x_admin/screen/dashboard/widgets/order_status_card/order_status_filter_bar.dart';
@@ -17,6 +17,7 @@ import 'package:choice_x_admin/core/utils/helpers/get_percentage_color.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 class DashboardScrollLayout extends StatelessWidget {
   const DashboardScrollLayout({
     super.key,
@@ -26,9 +27,9 @@ class DashboardScrollLayout extends StatelessWidget {
     required this.spots,
   });
 
-  final bool         isMobile;
-  final bool         isDesk;
-  final bool         isLoadingChart;
+  final bool isMobile;
+  final bool isDesk;
+  final bool isLoadingChart;
   final List<FlSpot> spots;
 
   @override
@@ -36,32 +37,30 @@ class DashboardScrollLayout extends StatelessWidget {
     return Consumer3<DashboardFilterProvider, OrderDetailsProvider,
         UserMgtProvider>(
       builder: (context, filter, orderProv, userProv, _) {
-        final sellerProv    = context.read<SellerMgtProvider>();
-        final f             = filter.statFilter;
+        final sellerProv = context.read<SellerMgtProvider>();
+        final f = filter.statFilter;
         final filteredSpots =
             DashboardChartHelper.sliceSpots(spots, filter.revenueMonthCount);
-
+       if (!orderProv.initialized) {
+  return const Center(child: EmptyRevenueState());
+}
         return SingleChildScrollView(
           padding: const EdgeInsets.only(bottom: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 10),
-
-              
               Row(children: [
                 const SectionLabel('Overview'),
                 const Spacer(),
                 const StatFilterBar(),
               ]),
               const SizedBox(height: 10),
-
-              
               Row(children: [
                 Expanded(
                   child: DashBoardStatCard(
-                    title:       'Total Revenue',
-                    value:       formatNumber(orderProv.filteredRevenue(f)),
+                    title: 'Total Revenue',
+                    value: formatNumber(orderProv.filteredRevenue(f)),
                     accentColor: getColorFromPercentage(
                         DashboardPercents.revenue(
                             orderProv.filteredRevenue(f).toDouble())),
@@ -72,9 +71,8 @@ class DashboardScrollLayout extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: DashBoardStatCard(
-                    title:       'Total Orders',
-                    value:       formatNumber(
-                        orderProv.filteredOrderCount(f)),
+                    title: 'Total Orders',
+                    value: formatNumber(orderProv.filteredOrderCount(f)),
                     accentColor: getColorFromPercentage(
                         DashboardPercents.orders(
                             orderProv.filteredOrderCount(f).toDouble())),
@@ -84,39 +82,34 @@ class DashboardScrollLayout extends StatelessWidget {
                 ),
               ]),
               const SizedBox(height: 12),
-
-            
               Row(children: [
                 Expanded(
                   child: DashBoardStatCard(
-                    title:       'Active Users',
-                    value:       formatNumber(userProv.totalUser),
-                    accentColor: getColorFromPercentage(
-                        DashboardPercents.activeUsers(
-                          activeUsers: orderProv.activeUsers.toDouble(),
-                          totalUsers:  userProv.totalUser.toDouble(),
-                        )),
+                    title: 'Active Users',
+                    value: formatNumber(userProv.totalUser),
+                    accentColor:
+                        getColorFromPercentage(DashboardPercents.activeUsers(
+                      activeUsers: orderProv.activeUsers.toDouble(),
+                      totalUsers: userProv.totalUser.toDouble(),
+                    )),
                     progressKey: 'activeUsers',
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: DashBoardStatCard(
-                    title:       'Active Sellers',
-                    value:       formatNumber(sellerProv.totalSeller),
-                    accentColor: getColorFromPercentage(
-                        DashboardPercents.activeSellers(
-                          activeSellers: sellerProv.activeSeller.toDouble(),
-                          totalSellers:  sellerProv.totalSeller.toDouble(),
-                        )),
+                    title: 'Active Sellers',
+                    value: formatNumber(sellerProv.totalSeller),
+                    accentColor:
+                        getColorFromPercentage(DashboardPercents.activeSellers(
+                      activeSellers: sellerProv.activeSeller.toDouble(),
+                      totalSellers: sellerProv.totalSeller.toDouble(),
+                    )),
                     progressKey: 'activeSellers',
                   ),
                 ),
               ]),
-
               const SizedBox(height: 20),
-
-             
               Row(children: [
                 const SectionLabel('Revenue Report'),
                 const Spacer(),
@@ -128,14 +121,12 @@ class DashboardScrollLayout extends StatelessWidget {
                 child: isLoadingChart
                     ? const Center(child: CircularProgressIndicator())
                     : LineChartWidget(
-                        isDesk:         isDesk,
-                        spots:          filteredSpots,
+                        isDesk: isDesk,
+                        spots: filteredSpots,
                         useAspectRatio: false,
                       ),
               ),
-
               const SizedBox(height: 20),
-
               Row(children: [
                 const SectionLabel('Order Status'),
                 const Spacer(),
@@ -145,7 +136,7 @@ class DashboardScrollLayout extends StatelessWidget {
               const SizedBox(
                 height: 250,
                 child: OrderStatusCardWidget(
-                  isMobile:       true,
+                  isMobile: true,
                   useAspectRatio: false,
                 ),
               ),

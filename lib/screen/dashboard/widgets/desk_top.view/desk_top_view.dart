@@ -1,6 +1,7 @@
 import 'package:choice_x_admin/screen/common/section_label/section_label.dart';
 import 'package:choice_x_admin/screen/dashboard/controller/chart_helper.dart';
 import 'package:choice_x_admin/screen/dashboard/controller/percents.dart';
+import 'package:choice_x_admin/screen/dashboard/widgets/empty_state/empty_state.dart';
 
 import 'package:choice_x_admin/screen/dashboard/widgets/order_status_card/filter_bar.dart';
 import 'package:choice_x_admin/screen/dashboard/widgets/order_status_card/order_status_card.dart';
@@ -38,7 +39,9 @@ class DashboardDeskLayout extends StatelessWidget {
         final f             = filter.statFilter;
         final filteredSpots =
             DashboardChartHelper.sliceSpots(spots, filter.revenueMonthCount);
-
+  if (!orderProv.initialized) {
+  return const Center(child: EmptyRevenueState());
+}
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

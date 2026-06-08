@@ -1,3 +1,4 @@
+import 'package:choice_x_admin/core/constants/app_colors.dart';
 import 'package:choice_x_admin/screen/brand/controller/brand_contoller.dart';
 import 'package:choice_x_admin/screen/brand/read_brand/widgets/app_bar.dart';
 import 'package:choice_x_admin/screen/brand/read_brand/widgets/content.dart';
@@ -27,35 +28,54 @@ class BrandScreen extends StatelessWidget {
       builder: (context, crud, _) {
         BrandContoller.showSnackbarIfNeeded(context, crud);
 
-        return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: crud.readBrand(),
-          builder: (context, snapshot) {
-            final state = handleSnapshot(snapshot);
-            if (state != null) return state;
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.read<BrandProvider>().setBrands(snapshot: snapshot);
-            });
-
-            return Consumer<BrandProvider>(
-              builder: (context, provider, _) {
-                if (provider.brands.isEmpty) return EmptyStates.brands();
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    buildAppBar(context, provider, isMobile),
-                    Expanded(
-                        child: buildContent(
-                      context,
-                      provider,
-                      isMobile,
-                    )),
-                  ],
+        return Column(
+          children: [ Consumer<BrandProvider>(
+            builder: (context, value, child) =>  buildAppBar(context, value, isMobile),
+          ),
+            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: crud.readBrand(),
+              builder: (context, snapshot) {
+                final state = handleSnapshot(snapshot);
+                if (state != null) return state;
+            
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  context.read<BrandProvider>().setBrands(snapshot: snapshot);
+                });
+            
+                return Consumer<BrandProvider>(
+                  builder: (context, provider, _) {
+                    if (provider.brands.isEmpty) {
+                      return Expanded(
+                        child: Container(margin: isMobile
+                                  ? null
+                                  : const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                              padding:
+                                  isMobile ? null : const EdgeInsets.all(15),
+                              decoration: isMobile
+                                  ? null
+                                  : BoxDecoration(
+                                      color: AppColors.sellerSurface,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: AppColors.sellerSurfaceDeep,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),child: EmptyStates.brands())),
+                      );
+                    }
+            
+                    return buildContent(
+                                      context,
+                                      provider,
+                                      isMobile,
+                                    );
+                  },
                 );
               },
-            );
-          },
+            ),
+          ],
         );
       },
     );

@@ -43,26 +43,28 @@ Widget buildContent(BuildContext context, BrandProvider provider, bool isMobile)
 
     if (isMobile) return grid;
 
-    return Container(margin: isMobile
-                              ? null
-                              : const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                          padding:
-                              isMobile ? null : const EdgeInsets.all(15),
-                          decoration: isMobile
-                              ? null
-                              : BoxDecoration(
-                                  color: AppColors.sellerSurface,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.sellerSurfaceDeep,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
-          child: grid,
+    return Expanded(
+      child: Container(margin: isMobile
+                                ? null
+                                : const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                            padding:
+                                isMobile ? null : const EdgeInsets.all(15),
+                            decoration: isMobile
+                                ? null
+                                : BoxDecoration(
+                                    color: AppColors.sellerSurface,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppColors.sellerSurfaceDeep,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(16)),
+            child: grid,
+          ),
         ),
       ),
     );

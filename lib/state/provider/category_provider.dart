@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
-class CategoryProvider extends ChangeNotifier{
+class CategoryProvider extends ChangeNotifier {
   final CategoryCrud _crud = CategoryCrud();
 
   List<CategoryModel> _allCategories = [];
@@ -26,10 +26,9 @@ class CategoryProvider extends ChangeNotifier{
 
   bool get searchOpen => _searchOpen;
   List<CategoryModel> get filtered => _filteredCategories;
-   List<CategoryModel> get categories => _allCategories;
-Uint8List? get imageBytes =>
-      image != null ? base64Decode(image!) : null;
- 
+  List<CategoryModel> get categories => _allCategories;
+  Uint8List? get imageBytes => image != null ? base64Decode(image!) : null;
+
   void setCategories({
     required AsyncSnapshot<QuerySnapshot<Object?>> snapshot,
   }) {
@@ -47,7 +46,6 @@ Uint8List? get imageBytes =>
     notifyListeners();
   }
 
-  
   void toggleSearch() {
     _searchOpen = !_searchOpen;
 
@@ -77,7 +75,6 @@ Uint8List? get imageBytes =>
     notifyListeners();
   }
 
- 
   Future<bool> createcategory() async {
     final form = formKey.currentState;
 
@@ -110,7 +107,6 @@ Uint8List? get imageBytes =>
     }
   }
 
-  
   Future<bool> updatecategory(String id, int index) async {
     final form = formKey.currentState;
 
@@ -148,13 +144,12 @@ Uint8List? get imageBytes =>
     }
   }
 
-  
   void populate(CategoryModel category) {
     nameController.text = category.name;
     image = category.image;
+    notifyListeners();
   }
 
-  
   Future<void> fileUpload() async {
     final result = await FilePicker.platform.pickFiles(withData: true);
 
@@ -181,13 +176,12 @@ Uint8List? get imageBytes =>
     super.dispose();
   }
 
-
-  
   Future<bool> createCategory() async {
     if (!_validateForm()) return false;
+    if (nameController.text.isEmpty || image == null) return false;
     _setLoading(true);
     try {
-    
+      _crud.addCategory(nameController.text, image!);
       return true;
     } catch (_) {
       return false;
@@ -198,9 +192,10 @@ Uint8List? get imageBytes =>
 
   Future<bool> updateCategory(String id, int index) async {
     if (!_validateForm()) return false;
+    if (nameController.text.isEmpty || image == null) return false;
     _setLoading(true);
     try {
-  
+      _crud.updateCategory(id: id, image: image!, name: nameController.text);
       return true;
     } catch (_) {
       return false;
@@ -209,20 +204,18 @@ Uint8List? get imageBytes =>
     }
   }
 
-
   void reset() {
     nameController.clear();
     image = null;
     notifyListeners();
   }
 
-  
-
-  
   bool _validateForm() => formKey.currentState?.validate() ?? false;
 
   void _setLoading(bool value) {
     isLoading = value;
     notifyListeners();
   }
+
+  
 }

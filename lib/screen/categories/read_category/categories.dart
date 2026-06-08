@@ -27,51 +27,74 @@ class CategoriesScreen extends StatelessWidget {
       builder: (context, crud, _) {
         CategoryController.showCategorySnackbarIfNeeded(context, crud);
 
-        return StreamBuilder(
-          stream: crud.readCategory(),
-          builder: (context, snapshot) {
-            final state = handleSnapshot(snapshot);
-            if (state != null) return state;
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              context
-                  .read<CategoryProvider>()
-                  .setCategories(snapshot: snapshot);
-            });
-
-            return Consumer<CategoryProvider>(
-              builder: (context, provider, _) {
-                if (provider.categories.isEmpty) {
-                  return EmptyStates.categories();
-                }
-
-                return Column(
-                  children: [
-                    buildCategoryAppBar(context, provider, isMobile),
-                    Expanded(
-                        child: Container(margin: isMobile
-                              ? null
-                              : const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                          padding:
-                              isMobile ? null : const EdgeInsets.all(15),
-                          decoration: isMobile
-                              ? null
-                              : BoxDecoration(
-                                  color: AppColors.sellerSurface,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                            child: Container(padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.sellerSurfaceDeep,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                                child: buildCategoryContent(
-                                    context, provider, isMobile)))),
-                  ],
+        return Column(
+          children: [  Consumer<CategoryProvider>(
+            builder: (context, provider, child)  {
+              return buildCategoryAppBar(context, provider, isMobile);
+            }
+          ),
+            StreamBuilder(
+              stream: crud.readCategory(),
+              builder: (context, snapshot) {
+                final state = handleSnapshot(snapshot);
+                if (state != null) return state;
+            
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  context
+                      .read<CategoryProvider>()
+                      .setCategories(snapshot: snapshot);
+                });
+            
+                return Consumer<CategoryProvider>(
+                  builder: (context, provider, _) {
+                    if (provider.categories.isEmpty) {
+                      return Expanded(
+                        child: Container(
+                          margin: isMobile
+                            ? null
+                            : const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                        padding:
+                            isMobile ? null : const EdgeInsets.all(15),
+                        decoration: isMobile
+                            ? null
+                            : BoxDecoration(
+                                color: AppColors.sellerSurface,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                          child: Container(padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.sellerSurfaceDeep,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                            child: EmptyStates.categories())),
+                      );
+                    }
+            
+                    return Expanded(
+                      child: Container(margin: isMobile
+                            ? null
+                            : const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                        padding:
+                            isMobile ? null : const EdgeInsets.all(15),
+                        decoration: isMobile
+                            ? null
+                            : BoxDecoration(
+                                color: AppColors.sellerSurface,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                          child: Container(padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.sellerSurfaceDeep,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                              child: buildCategoryContent(
+                                  context, provider, isMobile))),
+                    );
+                  },
                 );
               },
-            );
-          },
+            ),
+          ],
         );
       },
     );

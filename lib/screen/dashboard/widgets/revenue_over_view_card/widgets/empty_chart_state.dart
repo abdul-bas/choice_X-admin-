@@ -8,7 +8,7 @@ class EmptyChartState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Container(width: double.infinity,
       padding:   const EdgeInsets.fromLTRB(20, 10, 20, 20),
       decoration: BoxDecoration(
         color:        AppColors.sellerSurfaceInput,
@@ -16,7 +16,7 @@ class EmptyChartState extends StatelessWidget {
         border:       Border.all(color: AppColors.sellerBorder),
       ),
       child: AspectRatio(
-        aspectRatio: isMobile ? 1.4 : 1.79,
+        aspectRatio: isMobile ? 1.4 : 1.2,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
