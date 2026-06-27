@@ -1,4 +1,6 @@
+import 'package:choice_x_admin/config/alert_config.dart';
 import 'package:choice_x_admin/core/constants/app_colors.dart' show AppColors;
+import 'package:choice_x_admin/core/dialogs/alert_dialog.dart';
 import 'package:choice_x_admin/model/seller_model/seller_model.dart';
 import 'package:choice_x_admin/state/db/seller_mgt/seller_mgt.dart';
 import 'package:choice_x_admin/screen/seller/seller_mgt/widgets/mobile_view/contact_chip.dart';
@@ -127,23 +129,51 @@ class SellerMobileCard extends StatelessWidget {
             children: [
               Expanded(
                 child: SellerActionButton.accept(
-                  onTap: () {
-                    context.read<SellerMgt>().statusChange(
-                          'approved',
-                          seller.uid!,
-                        );
-                  },
+               onTap: () {
+  showDialog(
+    context: context,
+    builder: (context) => CustomAlertDialog(
+      config: AlertDialogConfig.warning(
+        title: 'Approve Seller',
+        content:
+            'Are you sure you want to approve this seller? Once approved, the seller will be able to access the platform and start selling.',
+        onConfirm: () {
+         
+
+          context.read<SellerMgt>().statusChange(
+                'approved',
+                seller.uid!,
+              );
+        },
+      ),
+    ),
+  );
+},
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: SellerActionButton.reject(
-                  onTap: () {
-                    context.read<SellerMgt>().statusChange(
-                          'reject',
-                          seller.uid!,
-                        );
-                  },
+                onTap: () {
+  showDialog(
+    context: context,
+    builder: (context) => CustomAlertDialog(
+      config: AlertDialogConfig.warning(
+        title: 'Reject Seller',
+        content:
+            'Are you sure you want to reject this seller? The seller will not be able to access the platform until approved.',
+        onConfirm: () {
+          
+
+          context.read<SellerMgt>().statusChange(
+                'reject',
+                seller.uid!,
+              );
+        },
+      ),
+    ),
+  );
+},
                 ),
               ),
             ],

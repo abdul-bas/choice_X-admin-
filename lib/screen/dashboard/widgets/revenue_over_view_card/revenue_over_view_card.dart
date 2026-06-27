@@ -1,4 +1,5 @@
 import 'package:choice_x_admin/core/constants/app_colors.dart';
+import 'package:choice_x_admin/screen/dashboard/widgets/empty_state/empty_state.dart';
 import 'package:choice_x_admin/screen/dashboard/widgets/revenue_over_view_card/widgets/bottom_title_widget.dart';
 import 'package:choice_x_admin/screen/dashboard/widgets/revenue_over_view_card/widgets/empty_chart_state.dart';
 import 'package:choice_x_admin/screen/dashboard/widgets/revenue_over_view_card/widgets/left_title_widgets.dart';
@@ -34,16 +35,16 @@ class LineChartWidget extends StatelessWidget {
   Widget build(BuildContext context) {
   
     final orderProv = context.read<OrderDetailsProvider>();
-    final hasRevenue = orderProv.totalRevenue > 0;
-    final hasChartData = spots.any((e) => e.y > 0);
+    
+    final validSpots = spots.where((e) => e.y.isFinite).toList();
 
-    if (!hasRevenue || !hasChartData) {
-      return  useAspectRatio
+    if (validSpots.isEmpty) {
+      return useAspectRatio
           ? AspectRatio(
               aspectRatio: isDesk ? 2 : 1.79,
-              child: EmptyChartState(isMobile: isDesk),
+              child: EmptyRevenueState(),
             )
-          : EmptyChartState(isMobile: isDesk);
+          : EmptyRevenueState();
     }
 
     const cutOffY = 5.0;

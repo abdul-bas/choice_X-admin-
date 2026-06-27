@@ -8,6 +8,15 @@ class UserMgtProvider extends ChangeNotifier {
   List<UserModel> _allUsers = [];
   List<UserModel> _filtered = [];
   final FocusNode searchFocus = FocusNode();
+  
+  final int _todayActive = 0;
+final int _todayInactive = 0;
+
+final int _weekActive = 0;
+final int _weekInactive = 0;
+
+final int _activeUsers = 0;
+final int _inactiveUsers = 0;
   int _totalUser = 0;
   int _last7DaysUsers = 0;
   List<UserModel> get users => _filtered;
@@ -65,10 +74,16 @@ class UserMgtProvider extends ChangeNotifier {
 
       _allUsers = data.docs.map((e) => UserModel.fromMap(e.data())).toList();
     }
+final now = DateTime.now();
+final startOfToday = DateTime(now.year, now.month, now.day);
+startOfToday.subtract(
+  Duration(days: now.weekday - 1),
+);
 
-    _totalUser = _allUsers.length;
+_totalUser = _allUsers.length;
 
-    final now = DateTime.now();
+
+  
 
   
 
@@ -77,8 +92,37 @@ _last7DaysUsers = _allUsers.where((e) {
     now.subtract(const Duration(days: 1)),
   );
 }).length;
-    print('last7DaysUsers////// : $_last7DaysUsers');
-      print('total users////// : $_totalUser');
+   
     notifyListeners();
   }
+
+  num filteredUserCount(String filter) {
+    switch (filter) {
+      case 'Today':      return _todayActive;
+      case 'This Week':  return _weekActive;
+      default:           return _activeUsers;
+    }
+  }
+
+ Map<String, double> userStatusCounts(String filter) {
+  switch (filter) {
+    case 'Today':
+      return {
+        'active': _todayActive.toDouble(),
+        'inactive': _todayInactive.toDouble(),
+      };
+
+    case 'This Week':
+      return {
+        'active': _weekActive.toDouble(),
+        'inactive': _weekInactive.toDouble(),
+      };
+
+    default:
+      return {
+        'active': _activeUsers.toDouble(),
+        'inactive': _inactiveUsers.toDouble(),
+      };
+  }
+}
 }

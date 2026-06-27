@@ -36,7 +36,6 @@ class OrderDetailsProvider extends ChangeNotifier {
   int get todayOrders   => _todayOrders;
   int get weeklyOrders  => _weeklyOrders;
 
-  // ── New per-period status counts ──────────────────────────────
   int _todayPlaced = 0, _weekPlaced = 0;
   int _todayConfirmed = 0, _weekConfirmed = 0;
   int _todayProcessing = 0, _weekProcessing = 0;
@@ -171,7 +170,7 @@ class OrderDetailsProvider extends ChangeNotifier {
           'delivered':      _weekDelivered.toDouble(),
           'cancelled':      _weekCancelled.toDouble(),
         };
-      default: // This Month / All Time
+      default:
         return {
           'placed':         _placed.toDouble(),
           'confirmed':      _confirmed.toDouble(),
@@ -183,98 +182,232 @@ class OrderDetailsProvider extends ChangeNotifier {
     }
   }
 
-  // ── Updated fetchTotalOrder ───────────────────────────────────
-  Future<void> fetchTotalOrder() async {
-    final now          = DateTime.now();
-    final startOfToday = DateTime(now.year, now.month, now.day);
-    final startOfWeek  = startOfToday.subtract(Duration(days: now.weekday - 1));
+ Future<void> fetchTotalOrder() async {
+  isLoading = true;
+  notifyListeners();
 
-    final data = await OrdersOprations().firestore.collection('orders').get();
-    _allOrders = data.docs.map((e) => OrderModel.fromMap(e.data())).toList();
+  try {
+    final now = DateTime.now();
 
-    // Reset all counters
-    int orderCount = 0, revenue = 0;
-    int todayCount = 0, todayRev = 0;
-    int weekCount  = 0, weekRev  = 0;
-    _placed = _confirmed = _processing = 0;
-    _outForDelivery = _delivered = _cancelled = 0;
-    _todayPlaced = _weekPlaced = 0;
-    _todayConfirmed = _weekConfirmed = 0;
-    _todayProcessing = _weekProcessing = 0;
-    _todayOutForDelivery = _weekOutForDelivery = 0;
-    _todayDelivered = _weekDelivered = 0;
-    _todayCancelled = _weekCancelled = 0;
-    _allTotalOrders = 0;
-    Set<String> users = {}, idleUsers = {};
+    final startOfToday = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    );
 
-    for (var order in _allOrders) {
-      final orderDate   = order.date;
-      final orderAmount = (order.amount * order.quantity).toInt();
-      final isToday     = !orderDate.isBefore(startOfToday);
-      final isThisWeek  = !orderDate.isBefore(startOfWeek);
-      final isThisMonth = orderDate.month == now.month && orderDate.year == now.year;
+    final startOfWeek = startOfToday.subtract(
+      Duration(days: now.weekday - 1),
+    );
 
-      // All-time status + per-period breakdown
-      switch (order.itemStatus.toLowerCase().trim()) {
+    final data = await OrdersOprations()
+        .firestore
+        .collection('orders')
+        .get();
+
+    _allOrders = data.docs
+        .map((e) => OrderModel.fromMap(e.data()))
+        .toList();
+
+
+    // Reset counters
+    _totalOrder = 0;
+    _totalRevenue = 0;
+
+    _todayOrders = 0;
+    _weeklyOrders = 0;
+
+    _todayRevenue = 0;
+    _weeklyRevenue = 0;
+
+    _placed = 0;
+    _confirmed = 0;
+    _processing = 0;
+    _outForDelivery = 0;
+    _delivered = 0;
+    _cancelled = 0;
+
+    _todayPlaced = 0;
+    _weekPlaced = 0;
+
+    _todayConfirmed = 0;
+    _weekConfirmed = 0;
+
+    _todayProcessing = 0;
+    _weekProcessing = 0;
+
+    _todayOutForDelivery = 0;
+    _weekOutForDelivery = 0;
+
+    _todayDelivered = 0;
+    _weekDelivered = 0;
+
+    _todayCancelled = 0;
+    _weekCancelled = 0;
+
+
+    Set<String> activeUsers = {};
+
+
+    for (final order in _allOrders) {
+
+      final orderDate = order.date;
+
+      final orderAmount =
+          (order.amount * order.quantity).toInt();
+
+
+      final isToday =
+          !orderDate.isBefore(startOfToday);
+
+      final isThisWeek =
+          !orderDate.isBefore(startOfWeek);
+
+
+      // Total
+      _totalOrder++;
+      _totalRevenue += orderAmount;
+
+
+      // Users
+      activeUsers.add(order.userId);
+
+
+
+      // Today
+      if (isToday) {
+        _todayOrders++;
+        _todayRevenue += orderAmount;
+      }
+
+
+      // This week
+      if (isThisWeek) {
+        _weeklyOrders++;
+        _weeklyRevenue += orderAmount;
+      }
+
+
+
+      // Status count
+      switch (order.itemStatus
+          .toLowerCase()
+          .trim()) {
+
+
         case 'pending':
         case 'order placed':
+
           _placed++;
-          if (isThisWeek) _weekPlaced++;
-          if (isToday)    _todayPlaced++;
+
+          if (isToday) {
+            _todayPlaced++;
+          }
+
+          if (isThisWeek) {
+            _weekPlaced++;
+          }
+
           break;
+
+
+
         case 'order confirmed':
+
           _confirmed++;
-          if (isThisWeek) _weekConfirmed++;
-          if (isToday)    _todayConfirmed++;
+
+          if (isToday) {
+            _todayConfirmed++;
+          }
+
+          if (isThisWeek) {
+            _weekConfirmed++;
+          }
+
           break;
+
+
+
         case 'processing':
+
           _processing++;
-          if (isThisWeek) _weekProcessing++;
-          if (isToday)    _todayProcessing++;
+
+          if (isToday) {
+            _todayProcessing++;
+          }
+
+          if (isThisWeek) {
+            _weekProcessing++;
+          }
+
           break;
+
+
+
         case 'out for delivery':
+
           _outForDelivery++;
-          if (isThisWeek) _weekOutForDelivery++;
-          if (isToday)    _todayOutForDelivery++;
+
+          if (isToday) {
+            _todayOutForDelivery++;
+          }
+
+          if (isThisWeek) {
+            _weekOutForDelivery++;
+          }
+
           break;
+
+
+
         case 'delivered':
+
           _delivered++;
-          if (isThisWeek) _weekDelivered++;
-          if (isToday)    _todayDelivered++;
+
+          if (isToday) {
+            _todayDelivered++;
+          }
+
+          if (isThisWeek) {
+            _weekDelivered++;
+          }
+
           break;
-        default:
-          print('Unknown status: ${order.itemStatus}');
       }
 
+
+
+      // Cancellation
       if (order.cancellationReason != null) {
+
         _cancelled++;
-        if (isThisWeek) _weekCancelled++;
-        if (isToday)    _todayCancelled++;
-      }
 
-      _allTotalOrders++;
+        if (isToday) {
+          _todayCancelled++;
+        }
 
-      if (isThisMonth) {
-        orderCount++;
-        revenue += orderAmount;
-        users.add(order.userId);
-      } else {
-        idleUsers.add(order.userId);
+        if (isThisWeek) {
+          _weekCancelled++;
+        }
       }
-      if (isThisWeek) { weekCount++; weekRev += orderAmount; }
-      if (isToday)    { todayCount++; todayRev += orderAmount; }
     }
 
-    _totalOrder    = orderCount;
-    _totalRevenue  = revenue;
-    _weeklyOrders  = weekCount;
-    _weeklyRevenue = weekRev;
-    _todayOrders   = todayCount;
-    _todayRevenue  = todayRev;
-    _activeUsers   = users.length;
-    _inActiveUsers = idleUsers.length;
 
+
+    _activeUsers = activeUsers.length;
+
+
+  } catch (e) {
+
+    debugPrint(
+      "Fetch orders error : $e",
+    );
+
+  } finally {
+
+    isLoading = false;
     notifyListeners();
+
   }
+}
 
 }

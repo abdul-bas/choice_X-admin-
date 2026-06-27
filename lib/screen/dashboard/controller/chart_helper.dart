@@ -2,10 +2,10 @@ import 'package:fl_chart/fl_chart.dart';
 
 abstract class DashboardChartHelper {
   
-  static List<FlSpot> sliceSpots(List<FlSpot> all, int monthCount) {
-    if (all.isEmpty) return [];
-    final start = all.length - monthCount;
-    return all
+  static List<FlSpot> filterSpots(List<FlSpot> allSpots, int monthCount) {
+    if (allSpots.isEmpty) return [];
+    final start = allSpots.length - monthCount;
+    return allSpots
         .sublist(start < 0 ? 0 : start)
         .asMap()
         .entries

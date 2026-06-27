@@ -1,7 +1,7 @@
 import 'package:choice_x_admin/screen/common/section_label/section_label.dart';
 import 'package:choice_x_admin/screen/dashboard/controller/chart_helper.dart';
 import 'package:choice_x_admin/screen/dashboard/controller/percents.dart';
-import 'package:choice_x_admin/screen/dashboard/widgets/empty_state/empty_state.dart';
+
 
 import 'package:choice_x_admin/screen/dashboard/widgets/order_status_card/filter_bar.dart';
 import 'package:choice_x_admin/screen/dashboard/widgets/order_status_card/order_status_card.dart';
@@ -38,10 +38,8 @@ class DashboardDeskLayout extends StatelessWidget {
         final sellerProv    = context.read<SellerMgtProvider>();
         final f             = filter.statFilter;
         final filteredSpots =
-            DashboardChartHelper.sliceSpots(spots, filter.revenueMonthCount);
-  if (!orderProv.initialized) {
-  return const Center(child: EmptyRevenueState());
-}
+            DashboardChartHelper.filterSpots(spots, filter.revenueMonthCount);
+  
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -65,7 +63,7 @@ class DashboardDeskLayout extends StatelessWidget {
                       Expanded(
                         child: DashBoardStatCard(
                           title:       'Total Revenue',
-                          value:       formatNumber(orderProv.filteredRevenue(f)),
+                          value:    orderProv.filteredRevenue(f),
                           accentColor: getColorFromPercentage(
                               DashboardPercents.revenue(
                                   orderProv.filteredRevenue(f).toDouble())),
@@ -77,8 +75,7 @@ class DashboardDeskLayout extends StatelessWidget {
                       Expanded(
                         child: DashBoardStatCard(
                           title:       'Total Orders',
-                          value:       formatNumber(
-                              orderProv.filteredOrderCount(f)),
+                          value:        orderProv.filteredOrderCount(f),
                           accentColor: getColorFromPercentage(
                               DashboardPercents.orders(
                                   orderProv.filteredOrderCount(f)
@@ -91,7 +88,7 @@ class DashboardDeskLayout extends StatelessWidget {
                       Expanded(
                         child: DashBoardStatCard(
                           title:       'Active Users',
-                          value:       formatNumber(userProv.totalUser),
+                          value:      userProv.filteredUserCount(f),
                           accentColor: getColorFromPercentage(
                               DashboardPercents.activeUsers(
                                 activeUsers: orderProv.activeUsers.toDouble(),
@@ -104,7 +101,7 @@ class DashboardDeskLayout extends StatelessWidget {
                       Expanded(
                         child: DashBoardStatCard(
                           title:       'Active Sellers',
-                          value:       formatNumber(sellerProv.totalSeller),
+                          value:   sellerProv.filteredSellerCount(f),
                           accentColor: getColorFromPercentage(
                               DashboardPercents.activeSellers(
                                 activeSellers:

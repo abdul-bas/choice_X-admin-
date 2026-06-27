@@ -24,28 +24,29 @@ class OrderStatusCardWidget extends StatelessWidget {
     return Consumer3<OrderDetailsProvider, OrderStatusProvider,
         DashboardFilterProvider>(
       builder: (context, orderProv, statusProv, filterProv, _) {
-        if (orderProv.allTotalOrders == 0) return orderStatusEmptyState();
+      
 
         final f = filterProv.orderStatusFilter;
         final counts = orderProv.statusCounts(f);
-        final total = counts.values.fold(0.0, (a, b) => a + b);
+      
 
-        final sections = OrderStatusRegistry.entries.map((entry) {
-          final ratio = statusProv.getValue(entry.key);
-          return PieChartSectionData(
-            color: entry.color,
-            value: ratio > 0 ? ratio * 150 : 0.001,
-            radius: 45,
-            title: '',
-            borderSide: BorderSide(
-              color: entry.color.withValues(alpha: 0.3),
-              width: 1.5,
-            ),
-          );
-        }).toList();
+     final total = orderProv.filteredOrderCount(f);
+ if (total<=0) return orderStatusEmptyState();
+final sections = OrderStatusRegistry.entries.map((entry) {
+  final value = counts[entry.key] ?? 0.0;
 
-        final hasData = counts.values.any((v) => v > 0);
-
+  return PieChartSectionData(
+    color: entry.color,
+    value: total > 0 ? value : 0.001,
+    radius: 45,
+    title: '',
+    borderSide: BorderSide(
+      color: entry.color.withOpacity(0.3),
+      width: 1.5,
+    ),
+  );
+}).toList();
+      final hasData = total > 0;
         final inner = Container(
           padding: const EdgeInsets.fromLTRB(15, 15, 20, 20),
           decoration: BoxDecoration(
@@ -77,7 +78,7 @@ class OrderStatusCardWidget extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                total.toInt().toString(),
+                             total.toString(),
                                 style: const TextStyle(
                                   color: AppColors.white,
                                   fontSize: 22,

@@ -1,4 +1,5 @@
-
+import 'package:choice_x_admin/core/utils/helpers/format_compact_number.dart';
+import 'package:choice_x_admin/core/utils/helpers/manage_empty_stat.dart';
 import 'package:choice_x_admin/screen/dashboard/widgets/stat_card/delta_row.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,12 +20,12 @@ class DashBoardStatCard extends StatelessWidget {
     this.delta,
   });
 
-  final String  title;
-  final String  value;
-  final Color   accentColor;
-  final String  progressKey;
-  final String  statusLabel;
-  final String  arcSubLabel;
+  final String title;
+  final num value;
+  final Color accentColor;
+  final String progressKey;
+  final String statusLabel;
+  final String arcSubLabel;
   final String? delta;
 
   @override
@@ -36,7 +37,7 @@ class DashBoardStatCard extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color:        AppColors.sellerSurface,
+            color: AppColors.sellerSurface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: AppColors.sellerWhite10,
@@ -45,18 +46,17 @@ class DashBoardStatCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-            
               SizedBox(
-                width:  76,
+                width: 76,
                 height: 76,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
                     CustomPaint(
-                      size:    const Size(76, 76),
+                      size: const Size(76, 76),
                       painter: ArcPainter(
                         progress: progress,
-                        color:    accentColor,
+                        color: accentColor,
                       ),
                     ),
                     Column(
@@ -65,19 +65,19 @@ class DashBoardStatCard extends StatelessWidget {
                         Text(
                           '${progress.round()}%',
                           style: const TextStyle(
-                            color:       AppColors.white,
-                            fontSize:    13,
-                            fontWeight:  FontWeight.w700,
+                            color: AppColors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
                             letterSpacing: -0.5,
-                            height:      1,
+                            height: 1,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           arcSubLabel,
                           style: TextStyle(
-                            color:      AppColors.white.withValues(alpha: 0.35),
-                            fontSize:   9,
+                            color: AppColors.white.withValues(alpha: 0.35),
+                            fontSize: 9,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -86,42 +86,57 @@ class DashBoardStatCard extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(width: 16),
+             Expanded(
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Text(
+        title,
+        textAlign: TextAlign.center,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: AppColors.white.withValues(alpha: 0.38),
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      const SizedBox(height: 8),
 
-         
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      value,
-                      style: const TextStyle(
-                        color:         AppColors.white,
-                        fontSize:      26,
-                        fontWeight:    FontWeight.w700,
-                        letterSpacing: -1,
-                        height:        1,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      title,
-                      maxLines:  1,
-                      overflow:  TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color:      AppColors.white.withValues(alpha: 0.38),
-                        fontSize:   12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    if (delta != null) ...[
-                      const SizedBox(height: 8),
-                      DeltaRow(delta: delta!, color: accentColor),
-                    ],
-                  ],
-                ),
-              ),
+      if (value > 0) ...[
+        Text(
+          formatNumber(value),
+          style: const TextStyle(
+            color: AppColors.white,
+            fontSize: 26,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ] else ...[
+        Text(
+          getEmptyMessage(title),
+          textAlign: TextAlign.center,
+          maxLines: 3,
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+
+      if (delta != null) ...[
+        const SizedBox(height: 8),
+        DeltaRow(
+          delta: delta!,
+          color: accentColor,
+        ),
+      ],
+    ],
+  ),
+),
             ],
           ),
         );

@@ -6,7 +6,6 @@ import 'package:choice_x_admin/model/seller_model/seller_model.dart';
 import 'package:choice_x_admin/screen/seller/seller_mgt/widgets/desk_top_view/desk_top_view.dart';
 import 'package:choice_x_admin/screen/seller/seller_mgt/widgets/mobile_view/mobile_view.dart';
 import 'package:choice_x_admin/screen/seller/seller_mgt/widgets/status_section/status_section.dart';
-
 import 'package:choice_x_admin/state/provider/seller_mgt_provider.dart';
 import 'package:choice_x_admin/state/db/seller_mgt/seller_management.dart';
 import 'package:choice_x_admin/core/utils/empty_states/empty_state.dart';
