@@ -61,7 +61,7 @@ abstract class DashboardAnimations {
       ..startAnimation(
         key: 'totalOrders',
         target: DashboardPercents.orders(
-          orderProvider.filteredOrderCount(statFilter).toDouble(),
+          orderProvider.filteredOrderCount(statFilter).toDouble(),orderProvider.allTotalOrders.toDouble(),statFilter
         ),
       )
       ..startAnimation(

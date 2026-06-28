@@ -8,29 +8,52 @@ class BrandCrud extends ChangeNotifier {
   String? message;
   IconData? icon;
   Color? color;
+Future<BrandModel?> addBrand(String name, String url) async {
+  try {
+    final brandId = name.toLowerCase().trim();
 
-  Future<BrandModel?> addBrand(String name, String url) async {
-    try {
-      final doc = FirebaseFirestore.instance.collection('brand');
-      doc.add({
-        'name': name,
-        'image': url,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+    final doc = FirebaseFirestore.instance
+        .collection('brand')
+        .doc(brandId);
 
-      message = 'Category added successfully!';
-      icon = Icons.check_circle;
-      color = Colors.green;
-      return BrandModel(name: name, image: url, id: doc.id);
-    } catch (e) {
-      message = 'Failed to add category! $e';
-      icon = Icons.error;
-      color = Colors.red;
+    // Check duplicate
+    final existing = await doc.get();
+
+    if (existing.exists) {
+      message = 'Brand already exists!';
+      icon = Icons.warning;
+      color = Colors.orange;
+      notifyListeners();
+      return null;
     }
 
+    await doc.set({
+      'name': name.trim(),
+      'image': url,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+
+    message = 'Brand added successfully!';
+    icon = Icons.check_circle;
+    color = Colors.green;
+
     notifyListeners();
-    return null;
+
+    return BrandModel(
+      name: name,
+      image: url,
+      id: brandId,
+    );
+
+  } catch (e) {
+    message = 'Failed to add brand! $e';
+    icon = Icons.error;
+    color = Colors.red;
   }
+
+  notifyListeners();
+  return null;
+}
 
   Stream<QuerySnapshot<Map<String, dynamic>>> readBrand() {
     return firebaseFirestore.collection('brand').snapshots();
@@ -39,24 +62,49 @@ class BrandCrud extends ChangeNotifier {
   Future<QuerySnapshot<Map<String, dynamic>>> getBrands() {
     return firebaseFirestore.collection('brand').get();
   }
+Future<void> updateBrand({
+  required String id,
+  required String image,
+  required String name,
+}) async {
+  try {
+    final newName = name.trim();
 
-  Future<void> updateBrand(
-      {required String id, required String image, required String name}) async {
-    try {
-      await firebaseFirestore
-          .collection('brand')
-          .doc(id)
-          .update({'name': name, 'image': image});
-      message = 'Category updated successfully!';
-      icon = Icons.check_circle;
-      color = Colors.green;
-    } catch (e) {
-      message = 'Failed to update category: $e';
-      icon = Icons.error;
-      color = Colors.red;
+    // Check duplicate brand name
+    final duplicate = await firebaseFirestore
+        .collection('brand')
+        .where('name', isEqualTo: newName)
+        .get();
+
+    if (duplicate.docs.isNotEmpty &&
+        duplicate.docs.first.id != id) {
+      message = 'Brand name already exists!';
+      icon = Icons.warning;
+      color = Colors.orange;
+      notifyListeners();
+      return;
     }
-    notifyListeners();
+
+    await firebaseFirestore
+        .collection('brand')
+        .doc(id)
+        .update({
+          'name': newName,
+          'image': image,
+        });
+
+    message = 'Brand updated successfully!';
+    icon = Icons.check_circle;
+    color = Colors.green;
+
+  } catch (e) {
+    message = 'Failed to update brand: $e';
+    icon = Icons.error;
+    color = Colors.red;
   }
+
+  notifyListeners();
+}
 
   Future<void> deleteBrand({required String id}) async {
     try {

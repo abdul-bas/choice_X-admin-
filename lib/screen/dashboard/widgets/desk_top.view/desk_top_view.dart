@@ -13,7 +13,6 @@ import 'package:choice_x_admin/state/provider/dash_board_filter_provider.dart';
 import 'package:choice_x_admin/state/provider/order_details_provider.dart';
 import 'package:choice_x_admin/state/provider/seller_mgt_provider.dart';
 import 'package:choice_x_admin/state/provider/user_management_provider.dart';
-import 'package:choice_x_admin/core/utils/helpers/format_compact_number.dart';
 import 'package:choice_x_admin/core/utils/helpers/get_percentage_color.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +38,7 @@ class DashboardDeskLayout extends StatelessWidget {
         final f             = filter.statFilter;
         final filteredSpots =
             DashboardChartHelper.filterSpots(spots, filter.revenueMonthCount);
-  
+ 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -79,7 +78,7 @@ class DashboardDeskLayout extends StatelessWidget {
                           accentColor: getColorFromPercentage(
                               DashboardPercents.orders(
                                   orderProv.filteredOrderCount(f)
-                                      .toDouble())),
+                                      .toDouble(),orderProv.allTotalOrders.toDouble(),f)),
                           progressKey: 'totalOrders',
                           arcSubLabel: f,
                         ),
@@ -91,8 +90,8 @@ class DashboardDeskLayout extends StatelessWidget {
                           value:      userProv.filteredUserCount(f),
                           accentColor: getColorFromPercentage(
                               DashboardPercents.activeUsers(
-                                activeUsers: orderProv.activeUsers.toDouble(),
-                                totalUsers:  userProv.totalUser.toDouble(),
+                                activeUsers: userProv.filteredUserCount(f).toDouble(),
+                                totalUsers:  userProv.total.toDouble(),
                               )),
                           progressKey: 'activeUsers',
                         ),

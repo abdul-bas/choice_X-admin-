@@ -28,13 +28,13 @@ class OrderDetailsProvider extends ChangeNotifier {
   int _cancelled = 0;
   bool _searchOpen = false;
   bool isLoading = false;
-   int _todayRevenue = 0, _weeklyRevenue = 0;
-  int _todayOrders  = 0, _weeklyOrders  = 0;
+  int _todayRevenue = 0, _weeklyRevenue = 0;
+  int _todayOrders = 0, _weeklyOrders = 0;
 
-  int get todayRevenue  => _todayRevenue;
+  int get todayRevenue => _todayRevenue;
   int get weeklyRevenue => _weeklyRevenue;
-  int get todayOrders   => _todayOrders;
-  int get weeklyOrders  => _weeklyOrders;
+  int get todayOrders => _todayOrders;
+  int get weeklyOrders => _weeklyOrders;
 
   int _todayPlaced = 0, _weekPlaced = 0;
   int _todayConfirmed = 0, _weekConfirmed = 0;
@@ -44,17 +44,17 @@ class OrderDetailsProvider extends ChangeNotifier {
   int _todayCancelled = 0, _weekCancelled = 0;
 
   int get todayPlaced => _todayPlaced;
-  int get weekPlaced  => _weekPlaced;
+  int get weekPlaced => _weekPlaced;
   int get todayConfirmed => _todayConfirmed;
-  int get weekConfirmed  => _weekConfirmed;
+  int get weekConfirmed => _weekConfirmed;
   int get todayProcessing => _todayProcessing;
-  int get weekProcessing  => _weekProcessing;
+  int get weekProcessing => _weekProcessing;
   int get todayOutForDelivery => _todayOutForDelivery;
-  int get weekOutForDelivery  => _weekOutForDelivery;
+  int get weekOutForDelivery => _weekOutForDelivery;
   int get todayDelivered => _todayDelivered;
-  int get weekDelivered  => _weekDelivered;
+  int get weekDelivered => _weekDelivered;
   int get todayCancelled => _todayCancelled;
-  int get weekCancelled  => _weekCancelled;
+  int get weekCancelled => _weekCancelled;
   get totalOrder => _totalOrder;
   get totalRevenue => _totalRevenue;
   get activeUsers => _activeUsers;
@@ -65,7 +65,12 @@ class OrderDetailsProvider extends ChangeNotifier {
   int get delivered => _delivered;
   int get cancelled => _cancelled;
   bool get searchOpen => _searchOpen;
-  int get allTotalOrders => _allTotalOrders;
+  int get allTotalOrders {
+    print(
+        '..........................$_allTotalOrders..................................');
+    return _allTotalOrders;
+  }
+
   int get inActiveUsers => _inActiveUsers;
   List<OrderModel> get filtered => _filteredOrders;
   List<OrderModel> get orders => _allOrders;
@@ -134,19 +139,25 @@ class OrderDetailsProvider extends ChangeNotifier {
     super.dispose();
   }
 
-   num filteredRevenue(String filter) {
+  num filteredRevenue(String filter) {
     switch (filter) {
-      case 'Today':      return _todayRevenue;
-      case 'This Week':  return _weeklyRevenue;
-      default:           return _totalRevenue;
+      case 'Today':
+        return _todayRevenue;
+      case 'This Week':
+        return _weeklyRevenue;
+      default:
+        return _totalRevenue;
     }
   }
 
   num filteredOrderCount(String filter) {
     switch (filter) {
-      case 'Today':      return _todayOrders;
-      case 'This Week':  return _weeklyOrders;
-      default:           return _totalOrder;
+      case 'Today':
+        return _todayOrders;
+      case 'This Week':
+        return _weeklyOrders;
+      default:
+        return _totalOrder;
     }
   }
 
@@ -154,260 +165,205 @@ class OrderDetailsProvider extends ChangeNotifier {
     switch (filter) {
       case 'Today':
         return {
-          'placed':         _todayPlaced.toDouble(),
-          'confirmed':      _todayConfirmed.toDouble(),
-          'processing':     _todayProcessing.toDouble(),
+          'placed': _todayPlaced.toDouble(),
+          'confirmed': _todayConfirmed.toDouble(),
+          'processing': _todayProcessing.toDouble(),
           'outForDelivery': _todayOutForDelivery.toDouble(),
-          'delivered':      _todayDelivered.toDouble(),
-          'cancelled':      _todayCancelled.toDouble(),
+          'delivered': _todayDelivered.toDouble(),
+          'cancelled': _todayCancelled.toDouble(),
         };
       case 'This Week':
         return {
-          'placed':         _weekPlaced.toDouble(),
-          'confirmed':      _weekConfirmed.toDouble(),
-          'processing':     _weekProcessing.toDouble(),
+          'placed': _weekPlaced.toDouble(),
+          'confirmed': _weekConfirmed.toDouble(),
+          'processing': _weekProcessing.toDouble(),
           'outForDelivery': _weekOutForDelivery.toDouble(),
-          'delivered':      _weekDelivered.toDouble(),
-          'cancelled':      _weekCancelled.toDouble(),
+          'delivered': _weekDelivered.toDouble(),
+          'cancelled': _weekCancelled.toDouble(),
         };
       default:
         return {
-          'placed':         _placed.toDouble(),
-          'confirmed':      _confirmed.toDouble(),
-          'processing':     _processing.toDouble(),
+          'placed': _placed.toDouble(),
+          'confirmed': _confirmed.toDouble(),
+          'processing': _processing.toDouble(),
           'outForDelivery': _outForDelivery.toDouble(),
-          'delivered':      _delivered.toDouble(),
-          'cancelled':      _cancelled.toDouble(),
+          'delivered': _delivered.toDouble(),
+          'cancelled': _cancelled.toDouble(),
         };
     }
   }
 
- Future<void> fetchTotalOrder() async {
-  isLoading = true;
-  notifyListeners();
+  Future<void> fetchTotalOrder() async {
+    isLoading = true;
+    notifyListeners();
 
-  try {
-    final now = DateTime.now();
+    try {
+      final now = DateTime.now();
 
-    final startOfToday = DateTime(
-      now.year,
-      now.month,
-      now.day,
-    );
+      final startOfToday = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      );
 
-    final startOfWeek = startOfToday.subtract(
-      Duration(days: now.weekday - 1),
-    );
+      final startOfWeek = startOfToday.subtract(
+        Duration(days: now.weekday - 1),
+      );
 
-    final data = await OrdersOprations()
-        .firestore
-        .collection('orders')
-        .get();
+      final data = await OrdersOprations().firestore.collection('orders').get();
 
-    _allOrders = data.docs
-        .map((e) => OrderModel.fromMap(e.data()))
-        .toList();
+      _allOrders = data.docs.map((e) => OrderModel.fromMap(e.data())).toList();
 
+      _totalOrder = 0;
+      _totalRevenue = 0;
 
-    // Reset counters
-    _totalOrder = 0;
-    _totalRevenue = 0;
+      _todayOrders = 0;
+      _weeklyOrders = 0;
 
-    _todayOrders = 0;
-    _weeklyOrders = 0;
+      _todayRevenue = 0;
+      _weeklyRevenue = 0;
 
-    _todayRevenue = 0;
-    _weeklyRevenue = 0;
+      _placed = 0;
+      _confirmed = 0;
+      _processing = 0;
+      _outForDelivery = 0;
+      _delivered = 0;
+      _cancelled = 0;
 
-    _placed = 0;
-    _confirmed = 0;
-    _processing = 0;
-    _outForDelivery = 0;
-    _delivered = 0;
-    _cancelled = 0;
+      _todayPlaced = 0;
+      _weekPlaced = 0;
 
-    _todayPlaced = 0;
-    _weekPlaced = 0;
+      _todayConfirmed = 0;
+      _weekConfirmed = 0;
 
-    _todayConfirmed = 0;
-    _weekConfirmed = 0;
+      _todayProcessing = 0;
+      _weekProcessing = 0;
 
-    _todayProcessing = 0;
-    _weekProcessing = 0;
+      _todayOutForDelivery = 0;
+      _weekOutForDelivery = 0;
 
-    _todayOutForDelivery = 0;
-    _weekOutForDelivery = 0;
+      _todayDelivered = 0;
+      _weekDelivered = 0;
 
-    _todayDelivered = 0;
-    _weekDelivered = 0;
+      _todayCancelled = 0;
+      _weekCancelled = 0;
 
-    _todayCancelled = 0;
-    _weekCancelled = 0;
+      Set<String> activeUsers = {};
 
+      for (final order in _allOrders) {
+        final orderDate = order.date;
 
-    Set<String> activeUsers = {};
+        final orderAmount = (order.amount * order.quantity).toInt();
 
+        final isToday = !orderDate.isBefore(startOfToday);
 
-    for (final order in _allOrders) {
+        final isThisWeek = !orderDate.isBefore(startOfWeek);
 
-      final orderDate = order.date;
+        _totalOrder++;
+        _totalRevenue += orderAmount;
 
-      final orderAmount =
-          (order.amount * order.quantity).toInt();
-
-
-      final isToday =
-          !orderDate.isBefore(startOfToday);
-
-      final isThisWeek =
-          !orderDate.isBefore(startOfWeek);
-
-
-      // Total
-      _totalOrder++;
-      _totalRevenue += orderAmount;
-
-
-      // Users
-      activeUsers.add(order.userId);
-
-
-
-      // Today
-      if (isToday) {
-        _todayOrders++;
-        _todayRevenue += orderAmount;
-      }
-
-
-      // This week
-      if (isThisWeek) {
-        _weeklyOrders++;
-        _weeklyRevenue += orderAmount;
-      }
-
-
-
-      // Status count
-      switch (order.itemStatus
-          .toLowerCase()
-          .trim()) {
-
-
-        case 'pending':
-        case 'order placed':
-
-          _placed++;
-
-          if (isToday) {
-            _todayPlaced++;
-          }
-
-          if (isThisWeek) {
-            _weekPlaced++;
-          }
-
-          break;
-
-
-
-        case 'order confirmed':
-
-          _confirmed++;
-
-          if (isToday) {
-            _todayConfirmed++;
-          }
-
-          if (isThisWeek) {
-            _weekConfirmed++;
-          }
-
-          break;
-
-
-
-        case 'processing':
-
-          _processing++;
-
-          if (isToday) {
-            _todayProcessing++;
-          }
-
-          if (isThisWeek) {
-            _weekProcessing++;
-          }
-
-          break;
-
-
-
-        case 'out for delivery':
-
-          _outForDelivery++;
-
-          if (isToday) {
-            _todayOutForDelivery++;
-          }
-
-          if (isThisWeek) {
-            _weekOutForDelivery++;
-          }
-
-          break;
-
-
-
-        case 'delivered':
-
-          _delivered++;
-
-          if (isToday) {
-            _todayDelivered++;
-          }
-
-          if (isThisWeek) {
-            _weekDelivered++;
-          }
-
-          break;
-      }
-
-
-
-      // Cancellation
-      if (order.cancellationReason != null) {
-
-        _cancelled++;
+        activeUsers.add(order.userId);
 
         if (isToday) {
-          _todayCancelled++;
+          _todayOrders++;
+          _todayRevenue += orderAmount;
         }
 
         if (isThisWeek) {
-          _weekCancelled++;
+          _weeklyOrders++;
+          _weeklyRevenue += orderAmount;
+        }
+
+        switch (order.itemStatus.toLowerCase().trim()) {
+          case 'pending':
+          case 'order placed':
+            _placed++;
+
+            if (isToday) {
+              _todayPlaced++;
+            }
+
+            if (isThisWeek) {
+              _weekPlaced++;
+            }
+
+            break;
+
+          case 'order confirmed':
+            _confirmed++;
+
+            if (isToday) {
+              _todayConfirmed++;
+            }
+
+            if (isThisWeek) {
+              _weekConfirmed++;
+            }
+
+            break;
+
+          case 'processing':
+            _processing++;
+
+            if (isToday) {
+              _todayProcessing++;
+            }
+
+            if (isThisWeek) {
+              _weekProcessing++;
+            }
+
+            break;
+
+          case 'out for delivery':
+            _outForDelivery++;
+
+            if (isToday) {
+              _todayOutForDelivery++;
+            }
+
+            if (isThisWeek) {
+              _weekOutForDelivery++;
+            }
+
+            break;
+
+          case 'delivered':
+            _delivered++;
+
+            if (isToday) {
+              _todayDelivered++;
+            }
+
+            if (isThisWeek) {
+              _weekDelivered++;
+            }
+
+            break;
+        }
+
+        if (order.cancellationReason != null) {
+          _cancelled++;
+
+          if (isToday) {
+            _todayCancelled++;
+          }
+
+          if (isThisWeek) {
+            _weekCancelled++;
+          }
         }
       }
+
+      _activeUsers = activeUsers.length;
+    } catch (e) {
+      debugPrint(
+        "Fetch orders error : $e",
+      );
+    } finally {
+      _allTotalOrders = _allOrders.length;
+      isLoading = false;
+      notifyListeners();
     }
-
-
-
-    _activeUsers = activeUsers.length;
-
-
-  } catch (e) {
-
-    debugPrint(
-      "Fetch orders error : $e",
-    );
-
-  } finally {
-
-    isLoading = false;
-    notifyListeners();
-
   }
-}
-
 }

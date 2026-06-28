@@ -10,4 +10,10 @@ Stream<QuerySnapshot> getSellerData() {
 
    
   }
+ Future<QuerySnapshot<Map<String, dynamic>>>  getSeller() {
+   
+    return firebaseFirestore.collection('seller').get();
+
+   
+  }
 }

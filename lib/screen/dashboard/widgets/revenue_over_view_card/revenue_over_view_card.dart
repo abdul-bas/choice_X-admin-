@@ -61,6 +61,7 @@ class LineChartWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(),
           Expanded(
             child: LineChart(
               LineChartData(

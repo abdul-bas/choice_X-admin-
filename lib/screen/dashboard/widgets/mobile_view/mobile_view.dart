@@ -41,9 +41,7 @@ class DashboardScrollLayout extends StatelessWidget {
         final f = filter.statFilter;
         final filteredSpots =
             DashboardChartHelper.filterSpots(spots, filter.revenueMonthCount);
-       if (!orderProv.initialized) {
-  return const Center(child: EmptyRevenueState());
-}
+      
         return SingleChildScrollView(
           padding: const EdgeInsets.only(bottom: 20),
           child: Column(
@@ -75,7 +73,7 @@ class DashboardScrollLayout extends StatelessWidget {
                     value: orderProv.filteredOrderCount(f),
                     accentColor: getColorFromPercentage(
                         DashboardPercents.orders(
-                            orderProv.filteredOrderCount(f).toDouble())),
+                            orderProv.filteredOrderCount(f).toDouble(),orderProv.allTotalOrders.toDouble(),f)),
                     progressKey: 'totalOrders',
                     arcSubLabel: f,
                   ),

@@ -10,49 +10,42 @@ class AdminDashbord extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-        valueListenable: sideBarIndex,
-        builder: (context, value, child) {
-          return Selector<DashbordSideview, int>(
-            selector: (context, povider) => povider.index,
-            builder: (context, value, child) {
-             
-
-              return LayoutBuilder(builder: (context, constraints) {
-                final width = constraints.maxWidth;
-
-               final bool isMobile = width < 600;
-final bool isTablet = width >= 600 && width < 900;
-final bool isDesktop = width >= 1100;
-                return Scaffold(
+    return Consumer<DashbordSideview>(
+      builder:(context, value, child)  {
+        return LayoutBuilder(builder: (context, constraints) {
+          final width = constraints.maxWidth;
                 
-                  drawer: SideMenuBar(
-                    sideBarIndex: sideBarIndex,
-                    value: value,isDrawer: true,
-                    isMobile: constraints.maxWidth<600,
-                  ),
-                  body: Row(
-                    children: [
-                      constraints.maxWidth > 700
-                          ? SideMenuBar(
-                              sideBarIndex: sideBarIndex,
-                              value: value,isDrawer: false,
-                             isMobile:  constraints.maxWidth<600
-                            )
-                          : SizedBox(),
-                      Expanded(
-                        child: SizedBox.expand(
-                            child: sidebarNavLinks[sideBarIndex.value]
-                                    ['navigation'](isDesktop,isMobile,isTablet) ??
-                                SizedBox()),
-                      ),
-                    ],
-                  ),
-                );
-              });
-            },
+         final bool isMobile = width < 600;
+                final bool isTablet = width >= 600 && width < 900;
+                final bool isDesktop = width >= 1100;
+          return Scaffold(
+          
+            drawer: SideMenuBar(
+              sideBarIndex: sideBarIndex,
+              value: value.index,isDrawer: true,
+              isMobile: constraints.maxWidth<600,
+            ),
+            body: Row(
+              children: [
+                constraints.maxWidth > 700
+                    ? SideMenuBar(
+                        sideBarIndex: sideBarIndex,
+                        value: value.index,isDrawer: false,
+                       isMobile:  constraints.maxWidth<600
+                      )
+                    : SizedBox(),
+                Expanded(
+                  child: SizedBox.expand(
+                      child: sidebarNavLinks[value.index]
+                              ['navigation'](isDesktop,isMobile,isTablet) ??
+                          SizedBox()),
+                ),
+              ],
+            ),
           );
         });
+      }
+    );
   }
 }
 

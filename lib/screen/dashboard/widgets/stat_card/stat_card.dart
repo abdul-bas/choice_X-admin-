@@ -33,7 +33,7 @@ class DashBoardStatCard extends StatelessWidget {
     return Consumer<ArcProgressProvider>(
       builder: (context, provider, _) {
         final double progress = getArcProgress(provider, progressKey);
-
+  
         return Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -87,56 +87,58 @@ class DashBoardStatCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-             Expanded(
-  child: Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      Text(
-        title,
-        textAlign: TextAlign.center,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: AppColors.white.withValues(alpha: 0.38),
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      const SizedBox(height: 8),
-
-      if (value > 0) ...[
-        Text(
-          formatNumber(value),
-          style: const TextStyle(
-            color: AppColors.white,
-            fontSize: 26,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ] else ...[
-        Text(
-          getEmptyMessage(title),
-          textAlign: TextAlign.center,
-          maxLines: 3,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-
-      if (delta != null) ...[
-        const SizedBox(height: 8),
-        DeltaRow(
-          delta: delta!,
-          color: accentColor,
-        ),
-      ],
-    ],
-  ),
-),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppColors.white.withValues(alpha: 0.38),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    if (value > 0) ...[
+                      Text(
+                        formatNumber(value),
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ] else ...[
+                      SizedBox(width: 150,
+                        child: Expanded(
+                          child: Text(
+                            getEmptyMessage(title),
+                            textAlign: TextAlign.center,
+                            maxLines: 3,
+                            style:  TextStyle(
+                              color: AppColors.ratingGradEnd.withValues(alpha: 0.5),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                    if (delta != null) ...[
+                      const SizedBox(height: 8),
+                      DeltaRow(
+                        delta: delta!,
+                        color: accentColor,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ],
           ),
         );
